@@ -1,0 +1,180 @@
+.inventory-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.inventory-header h2 {
+  color: #1e293b;
+  margin: 0;
+}
+
+.inventory-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  background-color: #f1f5f9;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.stat-info h4 {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.stat-info span {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0f172a;
+}
+
+/* --- Tabla de Items --- */
+.inventory-table-wrapper {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.inventory-table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+}
+
+.item-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.item-category {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Etiquetas de Estado (Condición) */
+.condition-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cond-new { background-color: #dcfce7; color: #15803d; }     /* Nuevo - Verde */
+.cond-good { background-color: #e0f2fe; color: #0369a1; }    /* Bueno - Azul */
+.cond-fair { background-color: #fef9c3; color: #a16207; }    /* Regular - Amarillo */
+.cond-damaged { background-color: #fee2e2; color: #b91c1c; } /* Dañado - Rojo */
+
+.action-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 1.1rem;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.action-icon-btn:hover {
+  color: #3b82f6;
+}
+
+.btn-delete:hover {
+  color: #ef4444;
+}
+
+/* --- Estilos del Modal (Ventana Emergente) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #1e293b;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.btn-cancel {
+  background: #cbd5e1;
+  color: #334155;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}

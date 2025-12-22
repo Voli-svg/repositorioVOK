@@ -1,0 +1,195 @@
+/* Layout General */
+.dashboard-container {
+    padding: 20px;
+    background-color: #f1f5f9; /* Fondo gris claro general */
+    min-height: 100vh;
+}
+
+.debug-bar {
+    margin-bottom: 10px;
+    text-align: right;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+/* GRID PRINCIPAL: 2 Columnas */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px; /* Izquierda flexible, Derecha fija 300px */
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* RESPONSIVE: En celular se pone una debajo de otra */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.section-title {
+    font-size: 1.2rem;
+    color: #334155;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* --- TARJETAS COMUNES (Blanco, redondeado, sombra) --- */
+.compose-card, .feed-card, .widget-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+}
+
+/* --- COMPONENTE INPUT --- */
+.compose-card input {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+}
+.compose-card input:focus {
+    background-color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* --- FEED POSTS --- */
+.feed-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 12px;
+}
+
+.feed-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 0.95rem;
+}
+
+.post-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.feed-body {
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+}
+
+.feed-actions {
+    display: flex;
+    gap: 15px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+}
+
+.btn-action {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-action:hover { color: #3b82f6; }
+
+/* --- WIDGETS LATERALES --- */
+.widget-header h3 {
+    margin: 0 0 15px 0;
+    font-size: 1rem;
+    color: #334155;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+
+.match-detail {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.match-detail label {
+    font-weight: 700;
+    color: #1e293b;
+    margin-right: 5px;
+}
+
+.match-detail span {
+    color: #475569;
+}
+
+.btn-outline-full {
+    width: 100%;
+    margin-top: 15px;
+    padding: 8px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #475569;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-outline-full:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+}
+
+/* Estados de Deuda */
+.status-box {
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.status-green {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.status-red {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.small-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-align: center;
+}

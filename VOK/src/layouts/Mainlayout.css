@@ -1,0 +1,194 @@
+/* Reset básico para asegurar altura completa */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+.layout-container {
+  display: flex; /* Esto pone el sidebar al lado del contenido */
+  height: 100vh; /* Ocupa toda la altura de la pantalla */
+}
+
+/* Estilos de la Barra Lateral */
+.sidebar {
+  width: 250px;
+  background-color: #1e293b; /* Un color oscuro profesional */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.sidebar-header h2 {
+  margin-top: 0;
+  color: #60a5fa; /* Azul claro para resaltar */
+  text-align: center;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 1.1rem;
+  display: block;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.sidebar-nav a:hover {
+  background-color: #334155;
+  color: white;
+}
+
+.sidebar-footer {
+  margin-top: auto; /* Empuja el botón al fondo */
+  padding-top: 20px;
+  border-top: 1px solid #334155;
+}
+
+.logout-btn {
+  color: #f87171 !important; /* Rojo suave para salir */
+}
+
+/* Estilos del Área de Contenido */
+.content-area {
+  flex: 1; /* Ocupa el espacio restante */
+  background-color: #f1f5f9;
+  padding: 2rem;
+  overflow-y: auto; /* Scroll si el contenido es muy largo */
+}
+
+/* Diferenciar el botón de Admin */
+.admin-link {
+  margin-top: 20px; /* Separarlo un poco del resto */
+  color: #fbbf24 !important; /* Color dorado/amarillo */
+  border: 1px solid #fbbf24;
+}
+
+.admin-link:hover, .admin-link.active {
+  background-color: rgba(251, 191, 36, 0.1) !important;
+}
+/* --- Arreglo para etiquetas de sección en el menú --- */
+.sidebar-nav li.menu-section-label {
+  pointer-events: none; /* Evita que se pueda hacer clic o seleccionar */
+  cursor: default;
+  margin-bottom: 5px; /* Ajuste fino del espaciado */
+}
+
+.sidebar-nav li.menu-section-label span {
+  /* Asegura que el texto se vea bien alineado */
+  display: block;
+}
+/* --- TÍTULOS DE SECCIÓN (Técnico / Admin) --- */
+.sidebar-nav li.section-label {
+    color: #94a3b8;           /* Gris azulado */
+    font-size: 0.75rem;       /* Letra pequeña */
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;   /* Un poco de aire entre letras */
+    
+    /* Alineación idéntica a los enlaces */
+    padding: 15px 10px 5px 10px; /* Arriba, Derecha, Abajo, Izquierda */
+    margin-top: 10px;
+    
+    /* Línea separadora sutil */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* Evitar comportamiento de botón */
+    cursor: default;
+    background: none !important;
+    pointer-events: none;
+}
+/* --- Contenedor Principal --- */
+.layout-container {
+    display: flex;
+    height: 100vh; /* IMPORTANTE: Obliga a ocupar el 100% de la altura de la pantalla */
+    overflow: hidden; /* Evita barras de desplazamiento dobles */
+}
+
+/* --- Barra Lateral Completa --- */
+.sidebar {
+    width: 260px; /* Un poco más ancho para que se vea mejor */
+    
+    /* AQUÍ CAMBIAS EL COLOR DE FONDO */
+    background-color: #0f172a; /* Este es un Azul Oscuro Profundo (Slate 900) */
+    /* Otros tonos que puedes probar:
+       #1e1b4b (Azul Indigo casi negro)
+       #172554 (Azul Océano oscuro)
+       #001529 (Azul estilo Ant Design)
+    */
+
+    color: #e2e8f0; /* Texto blanco grisáceo para que no canse la vista */
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1); /* Sombra suave a la derecha */
+}
+
+/* --- Asegurarnos que el footer no tenga fondo distinto --- */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Línea sutil */
+    background: transparent; /* Fondo transparente para heredar el azul oscuro */
+}
+
+.sidebar {
+    width: 260px;
+    background-color: #0f172a; /* Tu fondo azul oscuro */
+    color: #e2e8f0;
+    
+    /* ESTO ES LO IMPORTANTE PARA LA ESTRUCTURA */
+    height: 100vh; /* Altura completa de la pantalla */
+    display: flex; /* Usamos Flexbox */
+    flex-direction: column; /* Elementos uno debajo del otro */
+    padding: 1.5rem;
+    box-sizing: border-box; /* Para que el padding no rompa el ancho */
+    overflow: hidden; /* Evita doble scroll feo */
+}
+
+.sidebar-nav {
+    flex: 1; /* Ocupa todo el espacio sobrante entre el logo y el footer */
+    overflow-y: auto; /* Permite hacer scroll si la lista es muy larga */
+    overflow-x: hidden; /* Evita scroll horizontal */
+    margin-bottom: 10px; /* Un poco de aire antes del botón de salir */
+    
+    /* Opcional: Para ocultar la barra de scroll en navegadores modernos pero seguir scrolleando */
+    scrollbar-width: thin; 
+    scrollbar-color: #334155 transparent;
+}
+
+.sidebar-footer {
+    flex-shrink: 0; /* Evita que se aplaste si hay poco espacio */
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+}
+
+/* Estilo para la barra de scroll en Chrome/Safari/Edge */
+.sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background-color: #334155; /* Color gris oscuro */
+    border-radius: 10px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background-color: #475569; /* Un poco más claro al pasar el mouse */
+}

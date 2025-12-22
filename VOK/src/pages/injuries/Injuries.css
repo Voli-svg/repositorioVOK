@@ -1,0 +1,210 @@
+.injuries-container { padding: 20px; max-width: 1000px; margin: 0 auto; }
+.injuries-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+
+.injuries-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+.injury-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-top: 5px solid #ccc;
+    position: relative;
+}
+
+.border-red { border-top-color: #ef4444; }   /* Pendiente */
+.border-blue { border-top-color: #3b82f6; }  /* Tratamiento */
+.border-green { border-top-color: #22c55e; } /* Alta */
+
+.card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.player-name { font-weight: bold; color: #334155; }
+.badge { color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+
+.injury-title { margin: 0 0 5px 0; font-size: 1.1rem; }
+.injury-desc { font-style: italic; color: #64748b; margin-bottom: 15px; }
+
+.diagnosis-box {
+    background: #f1f5f9;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+.diagnosis-box h4 { margin: 0 0 5px 0; font-size: 0.85rem; color: #475569; }
+.kine-sign { display: block; text-align: right; margin-top: 5px; color: #3b82f6; }
+
+.btn-report { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+.btn-treat { width: 100%; background: #0f172a; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+
+.status-label { text-align: center; font-size: 0.8rem; font-weight: bold; padding-top: 10px; border-top: 1px solid #e2e8f0; }
+.status-pendiente { color: #ef4444; }
+.status-alta { color: #22c55e; }
+
+/* --- ESTILOS MEJORADOS DEL MODAL --- */
+
+/* Contenedor principal del modal más pulido */
+.modal-content {
+    background: white;
+    padding: 30px; /* Más espacio interno */
+    border-radius: 12px; /* Bordes redondeados suaves */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); /* Sombra elegante para dar profundidad */
+    width: 95%;
+    max-width: 500px; /* Ancho máximo controlado */
+    text-align: left; /* Alinear texto a la izquierda por defecto */
+}
+
+.modal-content h3 {
+    text-align: center;
+    color: #1e293b;
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+
+/* Layout del formulario en columna con espacio */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espacio entre cada campo */
+}
+
+/* Grupo de formulario (Etiqueta + Input) */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px; /* Espacio entre etiqueta e input */
+    font-size: 0.95rem;
+}
+
+/* Estilos generales para Inputs, Textarea y Select */
+.modal-form input,
+.modal-form textarea,
+.modal-form select {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    width: 100%; /* Ocupar todo el ancho disponible */
+    box-sizing: border-box; /* Evitar que el padding rompa el ancho */
+    transition: all 0.2s;
+}
+
+.modal-form textarea {
+    resize: vertical; /* Permitir redimensionar solo verticalmente */
+    min-height: 100px;
+}
+
+/* Efecto al hacer clic en un campo (Focus) */
+.modal-form input:focus,
+.modal-form textarea:focus,
+.modal-form select:focus {
+    outline: none;
+    border-color: #3b82f6; /* Azul al enfocar */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); /* Anillo azul suave */
+}
+
+/* --- BOTONES DEL MODAL --- */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end; /* Alinear a la derecha */
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.modal-btn {
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+    font-size: 0.95rem;
+}
+
+/* Botón Cancelar (Secundario) */
+.btn-cancel {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+.btn-cancel:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+
+/* Botón Enviar (Primario) */
+.btn-submit {
+    background-color: #3b82f6; /* Azul vibrante */
+    color: white;
+}
+.btn-submit:hover {
+    background-color: #2563eb; /* Azul más oscuro al pasar el mouse */
+}
+/* Fondo oscuro detrás de la ventana */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Oscurecer fondo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px); /* Efecto borroso elegante */
+}
+
+/* La tarjeta blanca */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90%;
+    max-width: 500px;
+    animation: slideIn 0.3s ease-out; /* Pequeña animación de entrada */
+}
+
+/* Animación suave */
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Título */
+.modal-content h3 {
+    text-align: center;
+    color: #1e293b;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 15px;
+    margin-top: 0;
+}
+
+/* Inputs y Selects */
+.modal-form textarea, .modal-form select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: #f8fafc;
+    transition: all 0.2s;
+}
+
+.modal-form textarea:focus, .modal-form select:focus {
+    background-color: white;
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Etiquetas */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #475569;
+}
