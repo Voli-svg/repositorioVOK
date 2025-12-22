@@ -62,24 +62,25 @@ class PaymentController extends Controller
         }
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
         try {
             $request->validate([
                 'user_id' => 'required',
                 'amount' => 'required|numeric',
-                'details' => 'required', // <--- CAMBIO AQUÍ
+                'concept' => 'required', // <--- CORREGIDO: Antes decía 'details'
                 'due_date' => 'required|date'
             ]);
 
             DB::table('payments')->insert([
                 'user_id' => $request->user_id,
                 'amount' => $request->amount,
-                'details' => $request->details, // <--- CAMBIO AQUÍ
+                'concept' => $request->concept, // <--- CORREGIDO: Debe coincidir con la DB
                 'due_date' => $request->due_date,
                 'status' => 'pending',
                 'created_at' => now(),
-                'updated_at' => now()
+                // Si tu tabla SQL no tiene 'updated_at', borra la siguiente línea:
+                // 'updated_at' => now() 
             ]);
 
             return response()->json(['message' => 'Cobro asignado correctamente']);
