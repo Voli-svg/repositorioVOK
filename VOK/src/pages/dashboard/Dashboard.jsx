@@ -99,13 +99,15 @@ export default function Dashboard() {
     fetch('http://127.0.0.1:8000/api/posts').then(r=>r.json()).then(setPosts);
   };
 
-  const fetchNextMatch = () => {
+const fetchNextMatch = () => {
     fetch('http://127.0.0.1:8000/api/matches')
       .then(r=>r.json())
       .then(data => {
+        // CORRECCIÓN: status 'scheduled' es como se guarda en la DB ahora
         const upcoming = data
-            .filter(m => m.status === 'upcoming') 
+            .filter(m => m.status === 'scheduled') 
             .sort((a, b) => new Date(a.match_date) - new Date(b.match_date));
+        
         if (upcoming.length > 0) setNextMatch(upcoming[0]);
       });
   };
@@ -184,16 +186,27 @@ export default function Dashboard() {
             <aside className="sidebar-widgets">
                 <div className="widget-card">
                     <div className="widget-header"><h3>🏐 Próximo Partido</h3></div>
-                    <div className="widget-body">
-                        {nextMatch ? (
+                        <div className="widget-body">
+                            {nextMatch ? (
                             <>
-                                <div className="match-detail"><label>🆚 Rival:</label> <strong>{nextMatch.opponent}</strong></div>
-                                <div className="match-detail"><label>📅 Cuándo:</label> <span>{formatDate(nextMatch.match_date)}</span></div>
-                                <div className="match-detail"><label>📍 Lugar:</label> <span>{nextMatch.location}</span></div>
+                                {/* CORRECCIÓN: .rival en vez de .opponent */}
+                                <div className="match-detail">
+                                    <label>🆚 Rival:</label> <strong>{nextMatch.rival}</strong>
+                                </div>
+                            
+                                <div className="match-detail">
+                                    <label>📅 Cuándo:</label> 
+                                    {/* Agregamos la hora también para que se vea completo */}
+                                    <span>{formatDate(nextMatch.match_date)} - {nextMatch.match_time?.substring(0, 5)} hrs</span>
+                                </div>
+                            
+                                <div className="match-detail">
+                                    <label>📍 Lugar:</label> <span>{nextMatch.location}</span>
+                                </div>
                             </>
-                        ) : <p className="empty-state">No hay partidos.</p>}
-                    </div>
-                </div>
+                            ) : <p className="empty-state">No hay partidos programados.</p>}
+                        </div>
+            </div>
 
                 {/* --- WIDGET FINANZAS INTELIGENTE --- */}
                 <div className="widget-card">

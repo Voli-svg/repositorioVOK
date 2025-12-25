@@ -1,0 +1,184 @@
+/* --- Attendance.css --- */
+
+/* Contenedor principal */
+.attendance-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Título */
+.attendance-container h2 {
+  text-align: center;
+  color: #1e293b; /* Azul oscuro */
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+/* Selector de fecha */
+.date-picker-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 2.5rem;
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.date-picker-container label {
+  font-weight: 600;
+  color: #475569;
+}
+
+.date-picker-container input[type="date"] {
+  padding: 0.6rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #334155;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.date-picker-container input[type="date"]:focus {
+  border-color: #3b82f6;
+}
+
+/* Lista de jugadores */
+.attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Fila de cada jugador */
+.attendance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.attendance-row:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.player-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Contenedor de botones de estado */
+.status-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Estilo base para los botones de asistencia */
+.btn-att {
+  padding: 0.5rem 1rem;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #f1f5f9; /* Gris claro por defecto */
+  color: #64748b;
+}
+
+.btn-att:hover:not(.active-present):not(.active-absent):not(.active-justified) {
+  background-color: #e2e8f0;
+}
+
+/* --- Estados Activos (Colores) --- */
+
+/* Presente (Verde) */
+.btn-att.active-present {
+  background-color: #dcfce7; /* Fondo verde claro */
+  color: #166534; /* Texto verde oscuro */
+  border-color: #22c55e; /* Borde verde vibrante */
+}
+
+/* Ausente (Rojo) */
+.btn-att.active-absent {
+  background-color: #fee2e2; /* Fondo rojo claro */
+  color: #991b1b; /* Texto rojo oscuro */
+  border-color: #ef4444; /* Borde rojo vibrante */
+}
+
+/* Justificado (Amarillo/Naranja) */
+.btn-att.active-justified {
+  background-color: #fef3c7; /* Fondo ámbar claro */
+  color: #92400e; /* Texto ámbar oscuro */
+  border-color: #f59e0b; /* Borde ámbar vibrante */
+}
+
+/* Botón Principal de Guardar */
+.btn-save-all {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 3rem auto 0; /* Centrado con margen superior */
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Degradado azul */
+  color: white;
+  border: none;
+  border-radius: 50px; /* Bordes redondeados */
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-save-all:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+}
+
+.btn-save-all:active {
+  transform: translateY(1px);
+}
+
+/* Estado de carga */
+p.loading-text {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #64748b;
+    margin: 2rem 0;
+}
+
+/* Responsive para móviles */
+@media (max-width: 600px) {
+  .attendance-row {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .status-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-att {
+    flex: 1; /* Los botones ocupan todo el ancho disponible */
+    padding: 0.6rem 0.2rem;
+    font-size: 0.85rem;
+  }
+}

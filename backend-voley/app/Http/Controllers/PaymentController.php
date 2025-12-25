@@ -31,13 +31,12 @@ class PaymentController extends Controller
             }
 
             if ($request->has('month') && $request->month != '') {
-                // CORREGIDO: payment_date en vez de due_date
                 $query->where('payments.payment_date', 'like', $request->month . '%');
             }
 
             $payments = $query
                 ->orderBy('payments.status', 'desc') 
-                ->orderBy('payments.payment_date', 'desc') // <--- CORREGIDO AQUÍ
+                ->orderBy('payments.payment_date', 'desc')
                 ->get();
 
             return response()->json($payments);
@@ -52,7 +51,7 @@ class PaymentController extends Controller
         try {
             $payments = DB::table('payments')
                 ->where('user_id', $userId)
-                ->orderBy('payment_date', 'desc') // <--- CORREGIDO AQUÍ (Antes decía due_date)
+                ->orderBy('payment_date', 'desc')
                 ->get();
             
             return response()->json($payments);
@@ -67,18 +66,18 @@ class PaymentController extends Controller
             $request->validate([
                 'user_id' => 'required',
                 'amount' => 'required|numeric',
-                'concept' => 'required',     // <--- Asegúrate que sea 'concept'
-                'payment_date' => 'required|date' // <--- CORREGIDO: payment_date
+                'concept' => 'required',
+                'payment_date' => 'required|date'
             ]);
 
+            // --- CORRECCIÓN AQUÍ ---
+            // Hemos quitado 'created_at' porque tu tabla no tiene esa columna.
             DB::table('payments')->insert([
                 'user_id' => $request->user_id,
                 'amount' => $request->amount,
-                'concept' => $request->concept,       // <--- Asegúrate que sea 'concept'
-                'payment_date' => $request->payment_date, // <--- CORREGIDO: payment_date
-                'status' => 'pending',
-                'created_at' => now(),
-                // 'updated_at' => now() // Descomentar solo si agregaste updated_at a la tabla
+                'concept' => $request->concept,
+                'payment_date' => $request->payment_date,
+                'status' => 'pending'
             ]);
 
             return response()->json(['message' => 'Cobro asignado correctamente']);
@@ -97,8 +96,7 @@ class PaymentController extends Controller
             $newStatus = ($payment->status === 'pending') ? 'paid' : 'pending';
 
             DB::table('payments')->where('id', $id)->update([
-                'status' => $newStatus,
-                // 'updated_at' => now() // Descomentar si tienes la columna
+                'status' => $newStatus
             ]);
 
             return response()->json(['message' => 'Estado actualizado', 'new_status' => $newStatus]);

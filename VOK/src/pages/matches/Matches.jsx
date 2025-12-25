@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { hasRole } from '../../utils/auth';
-import './Matches.css'; // Asegúrate de crear este CSS (abajo te lo dejo)
+import './Matches.css';
 
 export default function Matches() {
   const [matches, setMatches] = useState([]);
@@ -11,9 +11,18 @@ export default function Matches() {
   const [showScoreModal, setShowScoreModal] = useState(false);
   
   // Forms Data
-  const [newMatch, setNewMatch] = useState({ opponent: '', match_date: '', location: '', type: 'liga' });
-  const [editingMatch, setEditingMatch] = useState(null); // El partido al que le ponemos resultado
-  const [scoreData, setScoreData] = useState({ our_set_score: 0, opp_set_score: 0 });
+  // CORREGIDO: Usamos 'rival', separamos fecha y hora
+  const [newMatch, setNewMatch] = useState({ 
+    rival: '', 
+    match_date: '', 
+    match_time: '', 
+    location: '' 
+  });
+
+  const [editingMatch, setEditingMatch] = useState(null);
+  
+  // CORREGIDO: Nombres coinciden con la base de datos (score_local, score_visit)
+  const [scoreData, setScoreData] = useState({ score_local: 0, score_visit: 0 });
 
   // 1. Cargar Datos
   useEffect(() => {
@@ -25,7 +34,8 @@ export default function Matches() {
   const fetchMatches = () => {
     fetch('http://127.0.0.1:8000/api/matches')
       .then(res => res.json())
-      .then(data => setMatches(data));
+      .then(data => setMatches(data))
+      .catch(err => console.error("Error cargando partidos:", err));
   };
 
   // 2. Permisos
@@ -34,31 +44,64 @@ export default function Matches() {
   // 3. Crear Partido
   const handleCreate = async (e) => {
     e.preventDefault();
-    await fetch('http://127.0.0.1:8000/api/matches', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(newMatch)
-    });
-    setShowCreateModal(false);
-    fetchMatches();
-    setNewMatch({ opponent: '', match_date: '', location: '', type: 'liga' });
+    
+    // Validamos que la hora esté presente
+    if(!newMatch.match_time) {
+        alert("Por favor ingresa la hora del partido");
+        return;
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/matches', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(newMatch) // Ahora envía { rival, match_date, match_time, location }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            alert(`Error: ${errorData.message}`);
+            return;
+        }
+
+        setShowCreateModal(false);
+        fetchMatches();
+        // Resetear formulario
+        setNewMatch({ rival: '', match_date: '', match_time: '', location: '' });
+        alert("¡Partido creado exitosamente!");
+
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        alert("Error de conexión con el servidor");
+    }
   };
 
   // 4. Actualizar Resultado
   const handleScoreSubmit = async (e) => {
     e.preventDefault();
-    await fetch(`http://127.0.0.1:8000/api/matches/${editingMatch.id}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(scoreData)
-    });
-    setShowScoreModal(false);
-    fetchMatches();
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/api/matches/${editingMatch.id}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(scoreData)
+        });
+
+        if (!response.ok) throw new Error("Error al actualizar");
+
+        setShowScoreModal(false);
+        fetchMatches();
+    } catch (error) {
+        alert("No se pudo actualizar el marcador");
+    }
   };
 
   const openScoreModal = (match) => {
     setEditingMatch(match);
-    setScoreData({ our_set_score: match.our_set_score || 0, opp_set_score: match.opp_set_score || 0 });
+    // CORREGIDO: Mapeamos los datos que vienen del backend a los inputs
+    setScoreData({ 
+        score_local: match.score_local || 0, 
+        score_visit: match.score_visit || 0 
+    });
     setShowScoreModal(true);
   };
 
@@ -70,9 +113,12 @@ export default function Matches() {
   };
 
   // Formato de fecha bonito
-  const formatDate = (dateString) => {
+  const formatDate = (dateString, timeString) => {
+    if(!dateString) return "Fecha por definir";
+    // Combinamos fecha y hora para el formato
+    const fullDate = timeString ? `${dateString}T${timeString}` : dateString;
     const options = { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute:'2-digit' };
-    return new Date(dateString).toLocaleDateString('es-ES', options);
+    return new Date(fullDate).toLocaleDateString('es-ES', options);
   };
 
   return (
@@ -90,26 +136,29 @@ export default function Matches() {
         {matches.map(match => (
             <div key={match.id} className={`match-card ${match.status}`}>
                 <div className="match-top">
-                    <span className="match-type">{match.type.toUpperCase()}</span>
-                    <span className="match-date">{formatDate(match.match_date)}</span>
+                    {/* Usamos status en lugar de type que no existe */}
+                    <span className="match-type">{(match.status === 'scheduled' ? 'PROGRAMADO' : match.status).toUpperCase()}</span>
+                    <span className="match-date">{formatDate(match.match_date, match.match_time)}</span>
                 </div>
 
                 <div className="scoreboard">
                     <div className="team">
                         <span className="team-name">NOSOTROS</span>
-                        <span className="score">{match.status === 'finished' ? match.our_set_score : '-'}</span>
+                        {/* CORREGIDO: score_local */}
+                        <span className="score">{match.status === 'finished' ? match.score_local : '-'}</span>
                     </div>
                     <div className="vs">VS</div>
                     <div className="team">
-                        <span className="team-name">{match.opponent}</span>
-                        <span className="score">{match.status === 'finished' ? match.opp_set_score : '-'}</span>
+                        {/* CORREGIDO: rival */}
+                        <span className="team-name">{match.rival}</span>
+                        {/* CORREGIDO: score_visit */}
+                        <span className="score">{match.status === 'finished' ? match.score_visit : '-'}</span>
                     </div>
                 </div>
 
                 <div className="match-footer">
                     <p>📍 {match.location}</p>
                     
-                    {/* ACCIONES SOLO PARA ENTRENADOR/ADMIN */}
                     {canEdit && (
                         <div className="admin-actions">
                             <button className="btn-edit" onClick={() => openScoreModal(match)}>
@@ -133,15 +182,44 @@ export default function Matches() {
                 <form onSubmit={handleCreate} className="modal-form">
                     <div className="form-group">
                         <label>Rival:</label>
-                        <input required placeholder="Ej: Club Leones" onChange={e => setNewMatch({...newMatch, opponent: e.target.value})} />
+                        <input 
+                            required 
+                            placeholder="Ej: Club Leones" 
+                            value={newMatch.rival}
+                            onChange={e => setNewMatch({...newMatch, rival: e.target.value})} 
+                        />
                     </div>
-                    <div className="form-group">
-                        <label>Fecha y Hora:</label>
-                        <input type="datetime-local" required onChange={e => setNewMatch({...newMatch, match_date: e.target.value})} />
+                    
+                    {/* FECHA Y HORA SEPARADAS */}
+                    <div style={{display:'flex', gap: 10}}>
+                        <div className="form-group" style={{flex:1}}>
+                            <label>Fecha:</label>
+                            <input 
+                                type="date" 
+                                required 
+                                value={newMatch.match_date}
+                                onChange={e => setNewMatch({...newMatch, match_date: e.target.value})} 
+                            />
+                        </div>
+                        <div className="form-group" style={{flex:1}}>
+                            <label>Hora:</label>
+                            <input 
+                                type="time" 
+                                required 
+                                value={newMatch.match_time}
+                                onChange={e => setNewMatch({...newMatch, match_time: e.target.value})} 
+                            />
+                        </div>
                     </div>
+
                     <div className="form-group">
                         <label>Lugar:</label>
-                        <input required placeholder="Ej: Gimnasio Municipal" onChange={e => setNewMatch({...newMatch, location: e.target.value})} />
+                        <input 
+                            required 
+                            placeholder="Ej: Gimnasio Municipal" 
+                            value={newMatch.location}
+                            onChange={e => setNewMatch({...newMatch, location: e.target.value})} 
+                        />
                     </div>
                     <div className="modal-actions">
                         <button type="button" className="modal-btn btn-cancel" onClick={() => setShowCreateModal(false)}>Cancelar</button>
@@ -157,22 +235,22 @@ export default function Matches() {
         <div className="modal-overlay">
             <div className="modal-content">
                 <h3>Actualizar Marcador</h3>
-                <p style={{textAlign:'center', marginBottom: 20}}>Vs {editingMatch?.opponent}</p>
+                <p style={{textAlign:'center', marginBottom: 20}}>Vs {editingMatch?.rival}</p>
                 
                 <form onSubmit={handleScoreSubmit} className="modal-form">
                     <div style={{display:'flex', gap: 20, justifyContent: 'center'}}>
                         <div className="form-group" style={{textAlign:'center'}}>
-                            <label>Nosotros (Sets)</label>
+                            <label>Nosotros</label>
                             <input type="number" min="0" max="5" style={{width: 80, textAlign: 'center', fontSize: 20}} 
-                                value={scoreData.our_set_score}
-                                onChange={e => setScoreData({...scoreData, our_set_score: e.target.value})} 
+                                value={scoreData.score_local}
+                                onChange={e => setScoreData({...scoreData, score_local: e.target.value})} 
                             />
                         </div>
                         <div className="form-group" style={{textAlign:'center'}}>
-                            <label>Rival (Sets)</label>
+                            <label>Rival</label>
                             <input type="number" min="0" max="5" style={{width: 80, textAlign: 'center', fontSize: 20}}
-                                value={scoreData.opp_set_score}
-                                onChange={e => setScoreData({...scoreData, opp_set_score: e.target.value})} 
+                                value={scoreData.score_visit}
+                                onChange={e => setScoreData({...scoreData, score_visit: e.target.value})} 
                             />
                         </div>
                     </div>

@@ -72,5 +72,5 @@ Route::put('/injuries/{id}', [InjuryController::class, 'update']);
 Route::get('/players-status', [UserController::class, 'indexWithStatus']);
 
 // --- ASISTENCIA ---
-Route::get('/attendance', [AttendanceController::class, 'index']);
-Route::post('/attendance', [AttendanceController::class, 'store']);
+Route::get('/attendance', [AttendanceController::class, 'index']); // GET usa singular
+Route::post('/attendance', [AttendanceController::class, 'store']); // POST usa singular

@@ -9,8 +9,9 @@ export default function Finances() {
   const [filters, setFilters] = useState({ search: '', month: '' });
   const [showModal, setShowModal] = useState(false);
   
+  // CORREGIDO: Usamos los nombres que la Base de Datos espera
   const [newCharge, setNewCharge] = useState({
-    user_id: '', amount: '', details: '', due_date: '' 
+    user_id: '', amount: '', concept: '', payment_date: '' 
   });
 
   // 1. Cargar Usuario y Datos Iniciales
@@ -19,32 +20,29 @@ export default function Finances() {
     if (stored) {
         setCurrentUser(JSON.parse(stored));
     }
-    // Cargar usuarios (público o protegido según tu api.php, por si acaso enviamos token)
     fetch('http://127.0.0.1:8000/api/users').then(r => r.json()).then(setUsers);
   }, []);
 
   // 2. Cargar Pagos (CON TOKEN)
   useEffect(() => {
-    if (!currentUser) return; // Esperamos a tener usuario
+    if (!currentUser) return;
 
     const params = new URLSearchParams();
     if (filters.search) params.append('search', filters.search);
     if (filters.month) params.append('month', filters.month);
 
-    // OBTENEMOS EL TOKEN
     const token = localStorage.getItem('token');
 
     fetch(`http://127.0.0.1:8000/api/payments?${params.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // <--- CLAVE: Enviamos el token
+            'Authorization': `Bearer ${token}`
         }
     })
       .then(res => {
           if (res.status === 401) {
               alert("Tu sesión expiró. Por favor ingresa de nuevo.");
-              // Opcional: Redirigir al login
               return [];
           }
           return res.json();
@@ -62,14 +60,15 @@ export default function Finances() {
     e.preventDefault();
     if (!newCharge.user_id) { alert("Selecciona un jugador"); return; }
 
-    const token = localStorage.getItem('token'); // Token fresco
+    const token = localStorage.getItem('token');
 
     try {
+        // Al enviar 'newCharge', ahora ya lleva 'concept' y 'payment_date'
         const response = await fetch('http://127.0.0.1:8000/api/payments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // <--- CLAVE
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(newCharge)
         });
@@ -81,7 +80,8 @@ export default function Finances() {
 
         alert("¡Cobro asignado correctamente!");
         setShowModal(false);
-        setNewCharge({ user_id: '', amount: '', details: '', due_date: '' }); 
+        // Reseteamos con los nombres correctos
+        setNewCharge({ user_id: '', amount: '', concept: '', payment_date: '' }); 
         setFilters({ ...filters }); // Recargar tabla
 
     } catch (error) {
@@ -91,7 +91,8 @@ export default function Finances() {
 
   const toggleStatus = async (payment) => {
     if (!isAdmin) return;
-    if (!window.confirm(`¿Cambiar estado de "${payment.details}"?`)) return;
+    // CORREGIDO: Usamos payment.concept para el mensaje
+    if (!window.confirm(`¿Cambiar estado de "${payment.concept}"?`)) return;
 
     const token = localStorage.getItem('token');
 
@@ -99,11 +100,10 @@ export default function Finances() {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // <--- CLAVE
+            'Authorization': `Bearer ${token}`
         }
     });
     
-    // Actualización rápida visual
     setPayments(payments.map(p => 
         p.id === payment.id ? { ...p, status: p.status === 'pending' ? 'paid' : 'pending' } : p
     ));
@@ -164,8 +164,13 @@ export default function Finances() {
                 {payments.map(pay => (
                     <tr key={pay.id}>
                         {isAdmin && <td><strong>{pay.full_name}</strong></td>}
-                        <td>{pay.details}</td>
-                        <td>{pay.due_date}</td>
+                        
+                        {/* CORREGIDO: Leemos 'concept' en lugar de 'details' */}
+                        <td>{pay.concept}</td>
+                        
+                        {/* CORREGIDO: Leemos 'payment_date' en lugar de 'due_date' */}
+                        <td>{pay.payment_date}</td>
+                        
                         <td className="amount-cell">{formatCurrency(pay.amount)}</td>
                         <td>
                             <span className={`status-badge ${pay.status}`}>
@@ -209,17 +214,35 @@ export default function Finances() {
                     
                     <div className="form-group">
                         <label>Concepto:</label>
-                        <input required placeholder="Ej: Mensualidad Abril" value={newCharge.details} onChange={e => setNewCharge({...newCharge, details: e.target.value})} />
+                        {/* CORREGIDO: input ligado a 'concept' */}
+                        <input 
+                            required 
+                            placeholder="Ej: Mensualidad Abril" 
+                            value={newCharge.concept} 
+                            onChange={e => setNewCharge({...newCharge, concept: e.target.value})} 
+                        />
                     </div>
 
                     <div style={{display:'flex', gap: 10}}>
                         <div className="form-group" style={{flex:1}}>
                             <label>Monto:</label>
-                            <input type="number" required placeholder="5000" onChange={e => setNewCharge({...newCharge, amount: e.target.value})} />
+                            <input 
+                                type="number" 
+                                required 
+                                placeholder="5000" 
+                                value={newCharge.amount}
+                                onChange={e => setNewCharge({...newCharge, amount: e.target.value})} 
+                            />
                         </div>
                         <div className="form-group" style={{flex:1}}>
                             <label>Vencimiento:</label>
-                            <input type="date" required onChange={e => setNewCharge({...newCharge, due_date: e.target.value})} />
+                            {/* CORREGIDO: input ligado a 'payment_date' */}
+                            <input 
+                                type="date" 
+                                required 
+                                value={newCharge.payment_date}
+                                onChange={e => setNewCharge({...newCharge, payment_date: e.target.value})} 
+                            />
                         </div>
                     </div>
 

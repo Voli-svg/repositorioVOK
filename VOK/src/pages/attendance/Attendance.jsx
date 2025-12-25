@@ -1,140 +1,118 @@
 import React, { useState, useEffect } from 'react';
-import { hasRole } from '../../utils/auth';
-
-
+import './Attendance.css';
 export default function Attendance() {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]); // Hoy
-  const [list, setList] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
 
+  // Cargar lista al cambiar fecha
   useEffect(() => {
-    const stored = localStorage.getItem('user');
-    if (stored) setCurrentUser(JSON.parse(stored));
-  }, []);
-
-  // Cargar lista cuando cambia la fecha
-  useEffect(() => {
-    fetchList();
+    fetchAttendance();
   }, [date]);
 
-  const fetchList = () => {
+  const fetchAttendance = () => {
     setLoading(true);
-    const token = localStorage.getItem('token');
-    fetch(`http://127.0.0.1:8000/api/attendance?date=${date}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    })
-    .then(r => r.json())
-    .then(data => {
-        setList(data);
+    fetch(`http://127.0.0.1:8000/api/attendance?date=${date}`)
+      .then(res => res.json())
+      .then(data => {
+        // Inicializamos el estado local. Si viene null del back, lo dejamos null (sin marcar)
+        setUsers(data);
         setLoading(false);
-    });
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   };
 
+  // Función para cambiar el estado en local (React)
   const handleStatusChange = (userId, newStatus) => {
-    setList(list.map(item => 
-        item.user_id === userId ? { ...item, status: newStatus } : item
+    setUsers(users.map(u => 
+        u.user_id === userId ? { ...u, status: newStatus } : u
     ));
   };
 
-  const saveAttendance = async () => {
-    const token = localStorage.getItem('token');
+  // GUARDAR EN EL SERVIDOR
+  const handleSave = async () => {
     try {
-        await fetch('http://127.0.0.1:8000/api/attendance', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
-            },
-            body: JSON.stringify({
-                date: date,
-                attendances: list
-            })
-        });
-        alert("✅ Asistencia guardada correctamente");
+      const response = await fetch('http://127.0.0.1:8000/api/attendance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            date: date,
+            attendances: users.map(u => ({
+                user_id: u.user_id,
+                // AQUÍ ESTÁ LA CLAVE: Enviamos el status tal cual lo tenemos en el estado
+                // Asegúrate de que los botones guarden 'present', 'absent', 'justified'
+                status: u.status, 
+                remarks: u.remarks
+            }))
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // SI FALLA: Mostramos el error real del backend
+        alert("Error: " + result.message);
+      } else {
+        // SI FUNCIONA: Recién ahí mostramos éxito
+        alert("✅ " + result.message);
+      }
+
     } catch (error) {
-        alert("Error al guardar");
+      alert("Error de conexión con el servidor");
     }
   };
 
-  // PROTECCIÓN
-  if (currentUser && !hasRole(currentUser, ['coach', 'admin', 'super_admin'])) {
-      return <div style={{padding: 20}}>⛔ Solo entrenadores pueden pasar lista.</div>;
-  }
-
   return (
-    <div style={{padding: 20, maxWidth: 800, margin: '0 auto'}}>
-        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20}}>
-            <h2>📝 Control de Asistencia</h2>
-            <input 
-                type="date" 
-                value={date} 
-                onChange={(e) => setDate(e.target.value)}
-                style={{padding: 10, borderRadius: 5, border: '1px solid #ccc'}} 
-            />
-        </div>
+    <div className="attendance-container">
+      <h2>📋 Control de Asistencia</h2>
+      
+      <div className="date-picker-container">
+        <label>Fecha:</label>
+        <input type="date" value={date} onChange={e => setDate(e.target.value)} />
+      </div>
 
-        {loading ? <p>Cargando lista...</p> : (
-            <div style={{background: 'white', padding: 20, borderRadius: 8, boxShadow: '0 2px 5px rgba(0,0,0,0.1)'}}>
-                {list.map(player => (
-                    <div key={player.user_id} style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f1f5f9'}}>
-                        <span style={{fontWeight: 'bold', fontSize: '1.1rem'}}>{player.full_name}</span>
-                        
-                        <div style={{display: 'flex', gap: 5}}>
-                            {/* BOTÓN PRESENTE */}
-                            <button 
-                                onClick={() => handleStatusChange(player.user_id, 'present')}
-                                style={{
-                                    padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer',
-                                    background: player.status === 'present' ? '#22c55e' : '#f1f5f9',
-                                    color: player.status === 'present' ? 'white' : '#64748b',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                Presente
-                            </button>
-
-                            {/* BOTÓN AUSENTE */}
-                            <button 
-                                onClick={() => handleStatusChange(player.user_id, 'absent')}
-                                style={{
-                                    padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer',
-                                    background: player.status === 'absent' ? '#ef4444' : '#f1f5f9',
-                                    color: player.status === 'absent' ? 'white' : '#64748b',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                Ausente
-                            </button>
-
-                            {/* BOTÓN JUSTIFICADO */}
-                            <button 
-                                onClick={() => handleStatusChange(player.user_id, 'excused')}
-                                style={{
-                                    padding: '8px 15px', borderRadius: 5, border: 'none', cursor: 'pointer',
-                                    background: player.status === 'excused' ? '#eab308' : '#f1f5f9',
-                                    color: player.status === 'excused' ? 'white' : '#64748b',
-                                    fontWeight: 'bold'
-                                }}
-                            >
-                                Justif.
-                            </button>
-                        </div>
-                    </div>
-                ))}
-
+      {loading ? <p>Cargando...</p> : (
+        <div className="attendance-list">
+          {users.map(user => (
+            <div key={user.user_id} className="attendance-row">
+              <span className="player-name">{user.full_name}</span>
+              
+              <div className="status-buttons">
+                {/* BOTÓN PRESENTE */}
                 <button 
-                    onClick={saveAttendance}
-                    style={{
-                        width: '100%', marginTop: 20, padding: 15, background: '#3b82f6', 
-                        color: 'white', border: 'none', borderRadius: 8, fontSize: '1.1rem', 
-                        fontWeight: 'bold', cursor: 'pointer'
-                    }}
+                    className={`btn-att ${user.status === 'present' ? 'active-present' : ''}`}
+                    onClick={() => handleStatusChange(user.user_id, 'present')} // ENVÍA 'present' (INGLÉS)
                 >
-                    💾 Guardar Asistencia
+                    Presente
                 </button>
+
+                {/* BOTÓN AUSENTE */}
+                <button 
+                    className={`btn-att ${user.status === 'absent' ? 'active-absent' : ''}`}
+                    onClick={() => handleStatusChange(user.user_id, 'absent')} // ENVÍA 'absent' (INGLÉS)
+                >
+                    Ausente
+                </button>
+
+                {/* BOTÓN JUSTIFICADO */}
+                <button 
+                    className={`btn-att ${user.status === 'justified' ? 'active-justified' : ''}`}
+                    onClick={() => handleStatusChange(user.user_id, 'justified')} // ENVÍA 'justified' (INGLÉS)
+                >
+                    Justif.
+                </button>
+              </div>
             </div>
-        )}
+          ))}
+        </div>
+      )}
+
+      <button className="btn-save-all" onClick={handleSave}>
+        💾 Guardar Asistencia
+      </button>
     </div>
   );
 }
